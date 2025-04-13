@@ -36,3 +36,10 @@ export interface Bug {
   assignedDate: string;
   dueDate: string;
 }
+
+// UI helper types
+export enum DueDateStatus {
+  OVERDUE = "OVERDUE",
+  DUE_SOON = "DUE_SOON",
+  UPCOMING = "UPCOMING",
+}

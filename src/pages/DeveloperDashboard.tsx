@@ -31,6 +31,9 @@ export default function DeveloperDashboard() {
     sort: "dueDate-asc" as "dueDate-asc" | "dueDate-desc",
   });
 
+  // Focus mode
+  const [focusMode, setFocusMode] = useState(false);
+
   // Load current user
   useEffect(() => {
     const loadUser = async () => {
@@ -112,24 +115,41 @@ export default function DeveloperDashboard() {
     return await updateBugStatus(bugId, status);
   };
 
+  // Toggle focus mode
+  const toggleFocusMode = () => {
+    setFocusMode(!focusMode);
+  };
+
   // Find the currently selected project
   const selectedProject = projects.find(p => p.id === selectedProjectId);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar user={user} loading={userLoading} />
+      <Navbar 
+        user={user} 
+        loading={userLoading} 
+        focusMode={focusMode}
+        onToggleFocusMode={toggleFocusMode}
+      />
 
       <div className="pt-16 flex">
-        {/* Sidebar */}
-        <Sidebar
-          projects={projects}
-          loading={projectsLoading}
-          selectedProjectId={selectedProjectId}
-          onSelectProject={handleSelectProject}
-        />
+        {/* Sidebar - hidden in focus mode on mobile */}
+        <div className={cn(
+          focusMode ? "hidden md:block md:opacity-50 md:hover:opacity-100 transition-opacity" : "block"
+        )}>
+          <Sidebar
+            projects={projects}
+            loading={projectsLoading}
+            selectedProjectId={selectedProjectId}
+            onSelectProject={handleSelectProject}
+          />
+        </div>
 
         {/* Main content */}
-        <main className="flex-1 p-6 ml-0 md:ml-64 transition-all">
+        <main className={cn(
+          "flex-1 p-6 transition-all",
+          focusMode ? "ml-0" : "ml-0 md:ml-64"
+        )}>
           <div className="max-w-6xl mx-auto">
             {selectedProject ? (
               <div className="mb-6">
@@ -149,9 +169,11 @@ export default function DeveloperDashboard() {
             )}
 
             {/* Search and filters */}
-            <div className="mb-6 flex flex-col md:flex-row justify-between gap-4">
-              <SearchBar onSearch={setSearchQuery} />
-              <FilterControls onFilterChange={setFilters} />
+            <div className="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+              <div className="flex flex-col md:flex-row justify-between gap-4">
+                <SearchBar onSearch={setSearchQuery} />
+                <FilterControls onFilterChange={setFilters} />
+              </div>
             </div>
 
             {/* Bugs list */}
@@ -210,4 +232,8 @@ export default function DeveloperDashboard() {
       />
     </div>
   );
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(' ');
 }
