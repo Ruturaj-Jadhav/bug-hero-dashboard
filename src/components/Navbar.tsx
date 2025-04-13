@@ -1,15 +1,17 @@
 
 import { User } from "@/types";
-import { LogOut, UserCircle } from "lucide-react";
+import { LogOut, UserCircle, Eye, EyeOff } from "lucide-react";
 import { AvatarPlaceholder } from "./ui/avatar-placeholder";
 import { Button } from "@/components/ui/button";
 
 interface NavbarProps {
   user: User | null;
   loading: boolean;
+  focusMode?: boolean;
+  onToggleFocusMode?: () => void;
 }
 
-export function Navbar({ user, loading }: NavbarProps) {
+export function Navbar({ user, loading, focusMode = false, onToggleFocusMode }: NavbarProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 h-16 px-4 flex items-center justify-between">
       <div className="flex items-center space-x-2">
@@ -17,6 +19,17 @@ export function Navbar({ user, loading }: NavbarProps) {
       </div>
 
       <div className="flex items-center space-x-4">
+        {onToggleFocusMode && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onToggleFocusMode}
+            title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
+          >
+            {focusMode ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </Button>
+        )}
+        
         {loading ? (
           <div className="h-10 w-40 bg-gray-200 animate-pulse rounded-md"></div>
         ) : user ? (
@@ -29,7 +42,7 @@ export function Navbar({ user, loading }: NavbarProps) {
                   className="h-8 w-8 rounded-full"
                 />
               ) : (
-                <AvatarPlaceholder name={user.name} />
+                <AvatarPlaceholder name={user.name} className="h-8 w-8" />
               )}
               <span className="font-medium hidden md:inline">{user.name}</span>
             </div>
