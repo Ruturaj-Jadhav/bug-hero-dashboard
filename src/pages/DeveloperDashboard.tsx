@@ -1,0 +1,213 @@
+
+import { useState, useEffect, useMemo } from "react";
+import { Bug, BugPriority, BugStatus, User } from "@/types";
+import { Navbar } from "@/components/Navbar";
+import { Sidebar } from "@/components/Sidebar";
+import { SearchBar } from "@/components/SearchBar";
+import { FilterControls } from "@/components/FilterControls";
+import { BugCard } from "@/components/BugCard";
+import { BugModal } from "@/components/BugModal";
+import { EmptyState } from "@/components/EmptyState";
+import { useProjects } from "@/hooks/useProjects";
+import { useBugs } from "@/hooks/useBugs";
+import api from "@/services/api";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function DeveloperDashboard() {
+  // Current user (developer)
+  const [user, setUser] = useState<User | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
+
+  // Selected project and bugs
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedBug, setSelectedBug] = useState<Bug | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // Search and filters
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({
+    status: "ALL" as BugStatus | "ALL",
+    priority: "ALL" as BugPriority | "ALL",
+    sort: "dueDate-asc" as "dueDate-asc" | "dueDate-desc",
+  });
+
+  // Load current user
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await api.getCurrentUser();
+        setUser(userData);
+      } catch (error) {
+        console.error("Failed to load user:", error);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
+
+  // Load projects
+  const { projects, loading: projectsLoading } = useProjects(user?.id || "");
+
+  // When projects load, set the first project as selected if none is selected
+  useEffect(() => {
+    if (!selectedProjectId && projects.length > 0 && !projectsLoading) {
+      setSelectedProjectId(projects[0].id);
+    }
+  }, [projects, projectsLoading, selectedProjectId]);
+
+  // Load bugs for selected project
+  const { bugs, loading: bugsLoading, updateBugStatus } = useBugs(
+    selectedProjectId,
+    user?.id || ""
+  );
+
+  // Handle project selection
+  const handleSelectProject = (projectId: string) => {
+    setSelectedProjectId(projectId);
+  };
+
+  // Filter and sort bugs
+  const filteredBugs = useMemo(() => {
+    return bugs
+      .filter((bug) => {
+        // Search filter
+        const matchesSearch = bug.title
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+
+        // Status filter
+        const matchesStatus =
+          filters.status === "ALL" || bug.status === filters.status;
+
+        // Priority filter
+        const matchesPriority =
+          filters.priority === "ALL" || bug.priority === filters.priority;
+
+        return matchesSearch && matchesStatus && matchesPriority;
+      })
+      .sort((a, b) => {
+        // Sort by due date
+        const dateA = new Date(a.dueDate).getTime();
+        const dateB = new Date(b.dueDate).getTime();
+        
+        return filters.sort === "dueDate-asc" 
+          ? dateA - dateB 
+          : dateB - dateA;
+      });
+  }, [bugs, searchQuery, filters]);
+
+  // Handle bug selection and modal
+  const handleBugClick = (bug: Bug) => {
+    setSelectedBug(bug);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleUpdateStatus = async (bugId: string, status: BugStatus) => {
+    return await updateBugStatus(bugId, status);
+  };
+
+  // Find the currently selected project
+  const selectedProject = projects.find(p => p.id === selectedProjectId);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar user={user} loading={userLoading} />
+
+      <div className="pt-16 flex">
+        {/* Sidebar */}
+        <Sidebar
+          projects={projects}
+          loading={projectsLoading}
+          selectedProjectId={selectedProjectId}
+          onSelectProject={handleSelectProject}
+        />
+
+        {/* Main content */}
+        <main className="flex-1 p-6 ml-0 md:ml-64 transition-all">
+          <div className="max-w-6xl mx-auto">
+            {selectedProject ? (
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold mb-1">{selectedProject.name}</h1>
+                <p className="text-gray-500 text-sm">{selectedProject.description}</p>
+              </div>
+            ) : projectsLoading ? (
+              <div className="mb-6">
+                <Skeleton className="h-8 w-64 mb-2" />
+                <Skeleton className="h-4 w-96" />
+              </div>
+            ) : (
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold mb-1">My Dashboard</h1>
+                <p className="text-gray-500 text-sm">Select a project to view bugs</p>
+              </div>
+            )}
+
+            {/* Search and filters */}
+            <div className="mb-6 flex flex-col md:flex-row justify-between gap-4">
+              <SearchBar onSearch={setSearchQuery} />
+              <FilterControls onFilterChange={setFilters} />
+            </div>
+
+            {/* Bugs list */}
+            {bugsLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton key={i} className="h-40 rounded-2xl" />
+                ))}
+              </div>
+            ) : filteredBugs.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredBugs.map((bug) => (
+                  <BugCard
+                    key={bug.id}
+                    bug={bug}
+                    onClick={() => handleBugClick(bug)}
+                  />
+                ))}
+              </div>
+            ) : bugs.length > 0 ? (
+              <EmptyState
+                title="No matching bugs"
+                description="Try adjusting your search or filters to find what you're looking for."
+                action={{
+                  label: "Clear Filters",
+                  onClick: () => {
+                    setSearchQuery("");
+                    setFilters({
+                      status: "ALL",
+                      priority: "ALL",
+                      sort: "dueDate-asc",
+                    });
+                  },
+                }}
+              />
+            ) : (
+              <EmptyState
+                title="No bugs found"
+                description={
+                  selectedProjectId
+                    ? "There are no bugs assigned to you in this project."
+                    : "Select a project to view your assigned bugs."
+                }
+              />
+            )}
+          </div>
+        </main>
+      </div>
+
+      {/* Bug modal */}
+      <BugModal
+        bug={selectedBug}
+        open={modalOpen}
+        onClose={handleCloseModal}
+        onUpdateStatus={handleUpdateStatus}
+      />
+    </div>
+  );
+}
