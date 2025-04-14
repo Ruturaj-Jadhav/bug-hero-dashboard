@@ -11,30 +11,33 @@ export enum BugPriority {
 }
 
 export interface User {
-  id: string;
+  userID: number; // Updated to match backend's "userID"
   name: string;
   email: string;
-  avatar: string | null;
+  password?: string; // Optional, as it might not always be needed
+  role: string;
 }
 
 export interface Project {
-  id: string;
+  projectId: number; // Updated to match backend's "projectId"
   name: string;
   description: string;
-  assignedDevelopers: string[];
+  startDate: string; // Assuming backend sends this as a string
+  projectManager: User; // Nested object for the project manager
 }
 
 export interface Bug {
-  id: string;
+  bugId: number; // Updated to match backend's "bugId"
   title: string;
+  category: string; // Added to match backend's "category"
   description: string;
-  projectId: string;
-  status: BugStatus;
-  priority: BugPriority;
-  assignedTo: string;
-  createdBy: User;
-  assignedDate: string;
-  dueDate: string;
+  priority: string; // Updated to match backend's "priority" (e.g., "HIGH", "MEDIUM", "LOW")
+  status: string; // Updated to match backend's "status" (e.g., "IN_PROGRESS", "RESOLVED")
+  resolvedDate: string | null; // Nullable field
+  due: string; // Updated to match backend's "due"
+  assignedTo: User; // Nested object for the assigned developer
+  createdBy: User; // Nested object for the creator
+  project: Project; // Nested object for the project
 }
 
 // UI helper types

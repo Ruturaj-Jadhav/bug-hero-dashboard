@@ -1,13 +1,13 @@
 
 import { BugPriority } from "@/types";
 
-export const getPriorityColor = (priority: BugPriority) => {
+export const getPriorityColor = (priority: String) => {
   switch (priority) {
-    case BugPriority.HIGH:
+    case "HIGH":
       return "bg-red-600 text-white";
-    case BugPriority.MEDIUM:
+    case "MEDIUM":
       return "bg-amber-500 text-white";
-    case BugPriority.LOW:
+    case "LOW":
       return "bg-blue-200 text-blue-900";
     default:
       return "bg-gray-100 text-gray-800";

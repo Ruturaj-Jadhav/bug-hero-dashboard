@@ -9,8 +9,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface SidebarProps {
   projects: Project[];
   loading: boolean;
-  selectedProjectId: string | null;
-  onSelectProject: (projectId: string) => void;
+  selectedProjectId: number | null;
+  onSelectProject: (projectId: number) => void;
 }
 
 export function Sidebar({
@@ -60,15 +60,16 @@ export function Sidebar({
           ) : (
             <ul className="space-y-2">
               {projects.map((project) => (
-                <li key={project.id}>
+                <li key={project.projectId}>
                   <button
                     onClick={() => {
-                      onSelectProject(project.id);
+                      console.log("Selected project:", project.projectId);
+                      onSelectProject(project.projectId);
                       if (isMobile) setIsOpen(false);
                     }}
                     className={cn(
                       "w-full text-left px-3 py-2 rounded-md transition-colors",
-                      selectedProjectId === project.id
+                      selectedProjectId === project.projectId
                         ? "bg-primary text-white"
                         : "hover:bg-gray-200"
                     )}
