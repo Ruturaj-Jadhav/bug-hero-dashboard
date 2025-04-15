@@ -40,7 +40,7 @@ export const useBugs = (projectId: string | null, developerId: string) => {
       const updatedBug = await api.updateBugStatus(bugId, status);
       
       setBugs((prevBugs) =>
-        prevBugs.map((bug) => (bug.id === bugId ? updatedBug : bug))
+        prevBugs.map((bug) => (bug.bugId.toString() === bugId ? updatedBug : bug))
       );
       
       toast({

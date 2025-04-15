@@ -9,105 +9,119 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowDown, ArrowUp, Filter, Eye, EyeOff } from "lucide-react";
+import { ArrowDown, ArrowUp, Filter, Eye, EyeOff, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 interface FilterControlsProps {
-  onFilterChange: (filters: {
-    status: BugStatus | "ALL";
-    priority: BugPriority | "ALL";
-    sort: "dueDate-asc" | "dueDate-desc";
-  }) => void;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  statusFilter: string[];
+  onStatusFilterChange: (values: string[]) => void;
+  priorityFilter: string[];
+  onPriorityFilterChange: (values: string[]) => void;
 }
 
-export function FilterControls({ onFilterChange }: FilterControlsProps) {
-  const [filters, setFilters] = useState({
-    status: "ALL" as BugStatus | "ALL",
-    priority: "ALL" as BugPriority | "ALL",
-    sort: "dueDate-asc" as "dueDate-asc" | "dueDate-desc",
-  });
-  
-  // For expanded/collapsed filter panel
+export function FilterControls({ 
+  searchTerm, 
+  onSearchChange, 
+  statusFilter, 
+  onStatusFilterChange, 
+  priorityFilter, 
+  onPriorityFilterChange 
+}: FilterControlsProps) {
   const [expanded, setExpanded] = useState(false);
-
-  const updateFilters = (key: keyof typeof filters, value: any) => {
-    const updatedFilters = { ...filters, [key]: value };
-    setFilters(updatedFilters);
-    onFilterChange(updatedFilters);
-  };
+  const [sort, setSort] = useState<"dueDate-asc" | "dueDate-desc">("dueDate-asc");
 
   const toggleSortOrder = () => {
-    const newSortOrder = filters.sort === "dueDate-asc" ? "dueDate-desc" : "dueDate-asc";
-    updateFilters("sort", newSortOrder);
+    const newSortOrder = sort === "dueDate-asc" ? "dueDate-desc" : "dueDate-asc";
+    setSort(newSortOrder);
   };
   
   // Quick filter presets
   const applyPresetFilter = (preset: string) => {
-    let newFilters = { ...filters };
-    
     switch (preset) {
       case "high-priority":
-        newFilters = { ...filters, priority: BugPriority.HIGH };
+        onPriorityFilterChange([BugPriority.HIGH]);
         break;
       case "completed":
-        newFilters = { ...filters, status: BugStatus.COMPLETED };
+        onStatusFilterChange([BugStatus.COMPLETED]);
         break;
       case "in-progress":
-        newFilters = { ...filters, status: BugStatus.IN_PROGRESS };
+        onStatusFilterChange([BugStatus.IN_PROGRESS]);
+        break;
+      case "to-do":
+        onStatusFilterChange([BugStatus.TO_DO]);
         break;
       case "reset":
-        newFilters = { 
-          status: "ALL", 
-          priority: "ALL", 
-          sort: "dueDate-asc" 
-        };
+        onStatusFilterChange([]);
+        onPriorityFilterChange([]);
         break;
     }
-    
-    setFilters(newFilters);
-    onFilterChange(newFilters);
   };
 
   return (
     <div className="w-full">
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-500" />
-          <span className="text-sm font-medium">Filters:</span>
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between mb-4">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+            <Input
+              type="search"
+              placeholder="Search bugs..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+            />
+          </div>
           <Button 
             variant="ghost" 
             size="sm" 
             className="p-1 h-7"
             onClick={() => setExpanded(!expanded)}
+            title={expanded ? "Hide filters" : "Show filters"}
           >
-            {expanded ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {expanded ? <EyeOff className="h-4 w-4" /> : <Filter className="h-4 w-4" />}
           </Button>
         </div>
         
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2">
           <Select
-            value={filters.status}
-            onValueChange={(value) => updateFilters("status", value)}
+            value={statusFilter.length === 1 ? statusFilter[0] : ""}
+            onValueChange={(value) => {
+              if (value === "") {
+                onStatusFilterChange([]);
+              } else {
+                onStatusFilterChange([value]);
+              }
+            }}
           >
             <SelectTrigger className="w-[130px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">All Statuses</SelectItem>
+              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value={BugStatus.TO_DO}>To Do</SelectItem>
               <SelectItem value={BugStatus.IN_PROGRESS}>In Progress</SelectItem>
               <SelectItem value={BugStatus.COMPLETED}>Completed</SelectItem>
             </SelectContent>
           </Select>
 
           <Select
-            value={filters.priority}
-            onValueChange={(value) => updateFilters("priority", value)}
+            value={priorityFilter.length === 1 ? priorityFilter[0] : ""}
+            onValueChange={(value) => {
+              if (value === "") {
+                onPriorityFilterChange([]);
+              } else {
+                onPriorityFilterChange([value]);
+              }
+            }}
           >
             <SelectTrigger className="w-[130px]">
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">All Priorities</SelectItem>
+              <SelectItem value="">All Priorities</SelectItem>
               <SelectItem value={BugPriority.LOW}>Low</SelectItem>
               <SelectItem value={BugPriority.MEDIUM}>Medium</SelectItem>
               <SelectItem value={BugPriority.HIGH}>High</SelectItem>
@@ -121,7 +135,7 @@ export function FilterControls({ onFilterChange }: FilterControlsProps) {
             className="flex items-center gap-1"
           >
             Due Date
-            {filters.sort === "dueDate-asc" ? (
+            {sort === "dueDate-asc" ? (
               <ArrowUp className="h-3 w-3" />
             ) : (
               <ArrowDown className="h-3 w-3" />
@@ -131,7 +145,7 @@ export function FilterControls({ onFilterChange }: FilterControlsProps) {
       </div>
       
       {expanded && (
-        <Card className="mt-3 p-3 animate-fade-in">
+        <Card className="mt-2 p-3 animate-in fade-in duration-200">
           <div className="text-sm mb-2">Quick filters:</div>
           <div className="flex flex-wrap gap-2">
             <Button 

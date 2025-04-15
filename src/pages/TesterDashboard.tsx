@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { User, Project, Bug, BugPriority } from "@/types";
+import { User, Project, Bug, BugPriority, BugStatus } from "@/types";
 import { useProjects } from "@/hooks/useProjects";
 import { useBugs } from "@/hooks/useBugs";
 import { Sidebar } from "@/components/Sidebar";
@@ -104,6 +104,11 @@ export default function TesterDashboard() {
     setFocusMode(!focusMode);
   };
 
+  // Handle updating status (not actually used by tester but needed for the BugModal props)
+  const handleUpdateStatus = async (bugId: string, status: string): Promise<boolean> => {
+    return Promise.resolve(false); // Testers cannot update status
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar 
@@ -183,7 +188,7 @@ export default function TesterDashboard() {
         bug={selectedBug}
         open={modalOpen}
         onClose={handleCloseModal}
-        onUpdateStatus={() => Promise.resolve(false)}
+        onUpdateStatus={handleUpdateStatus}
       />
 
       <Toaster />
