@@ -1,126 +1,132 @@
-import { Bug, BugPriority, BugStatus } from "@/types";
-import { cn } from "@/lib/utils";
-import { Calendar, Clock, Flag, Square, Circle, Triangle } from "lucide-react";
-import { format, isPast, isToday, addDays, isBefore } from "date-fns";
-import { Badge } from "@/components/ui/badge";
+
+import { useState } from "react";
+import { Bug, BugStatus, BugPriority } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { ChevronDown, Clock, User, Calendar, Check } from "lucide-react";
+import { getPriorityColor } from "@/utils/priorities";
 import { AvatarPlaceholder } from "./ui/avatar-placeholder";
-import { getPriorityColor, getDueDateStatus } from "@/utils/priorities";
 
 interface BugCardProps {
   bug: Bug;
-  onClick: () => void;
+  status: BugStatus;
+  onAssignDeveloper: (bugId: number, developerId: number) => void;
 }
 
-export function BugCard({ bug, onClick }: BugCardProps) {
-  const formatDate = (dateString: string) => {
-    try {
-      return format(new Date(dateString), "MMM d, yyyy");
-    } catch (e) {
-      return dateString;
-    }
+export function BugCard({ bug, status, onAssignDeveloper }: BugCardProps) {
+  const [isAssigning, setIsAssigning] = useState(false);
+  
+  // Mock developers for the dropdown
+  const mockDevelopers = [
+    { userID: 4, name: "Mike Chen", email: "mike@example.com" },
+    { userID: 5, name: "Sarah Wilson", email: "sarah@example.com" },
+    { userID: 6, name: "David Johnson", email: "david@example.com" }
+  ];
+  
+  const handleAssignDeveloper = (developerId: number) => {
+    setIsAssigning(true);
+    onAssignDeveloper(bug.bugId, developerId);
+    setTimeout(() => setIsAssigning(false), 1000);
   };
-
-  // Calculate due date status for visual indication
-  const getDueDateStatusVisual = (dueDate: string) => {
-    const now = new Date();
-    const due = new Date(dueDate);
-
-    if (isPast(due)) {
-      return "overdue";
-    } else if (isToday(due) || isBefore(due, addDays(now, 2))) {
-      return "soon";
-    } else {
-      return "upcoming";
-    }
+  
+  // Format date helper
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "N/A";
+    return format(new Date(dateString), "MMM d, yyyy");
   };
-
-  const dueDateStatus = getDueDateStatusVisual(bug.due);
-
-  // Get priority icon
-  const getPriorityIcon = () => {
-    switch (bug.priority) {
-      case "HIGH":
-        return <Triangle className="h-3 w-3 mr-1 fill-current" />;
-      case "MEDIUM":
-        return <Square className="h-3 w-3 mr-1" />;
-      case "LOW":
-        return <Circle className="h-3 w-3 mr-1" />;
-      default:
-        return <Circle className="h-3 w-3 mr-1" />;
-    }
-  };
-
-  // Card scaling based on priority
-  const cardScale =
-    bug.priority === "HIGH"
-      ? "transform hover:scale-102 transition-all"
-      : "";
-
-  // Card border based on priority
-  const cardBorder =
-    bug.priority === "HIGH"
-      ? "border-l-4 border-l-red-500"
-      : bug.priority === "MEDIUM"
-      ? "border-l-4 border-l-amber-400"
-      : "";
-
+  
   return (
-    <Card
-      className={cn(
-        "hover:shadow-md transition-all cursor-pointer overflow-hidden",
-        cardScale,
-        cardBorder
-      )}
-      onClick={onClick}
-    >
+    <Card className="overflow-hidden">
       <CardContent className="p-4">
-        <div className="flex justify-between items-start gap-2 mb-3">
+        <div className="flex justify-between items-start gap-2 mb-2">
           <h3 className="text-base font-medium line-clamp-2">{bug.title}</h3>
-          <Badge
-            variant="secondary"
-            className={cn(
-              "rounded-full px-2 py-0.5 text-xs font-medium",
-              getPriorityColor(bug.priority)
-            )}
-          >
-            {getPriorityIcon()}
+          <Badge className={getPriorityColor(bug.priority)}>
             {bug.priority}
           </Badge>
         </div>
-
-        <div
-          className={cn(
-            "flex items-center text-sm mt-4",
-            getDueDateStatus(bug.due)
-          )}
-        >
-          {dueDateStatus === "overdue" ? (
-            <Clock className="h-3.5 w-3.5 mr-1 text-red-600" />
-          ) : dueDateStatus === "soon" ? (
-            <Calendar className="h-3.5 w-3.5 mr-1 text-amber-600" />
-          ) : (
-            <Calendar className="h-3.5 w-3.5 mr-1" />
-          )}
-          <span>
-            {dueDateStatus === "overdue" && "Overdue: "}
-            {dueDateStatus === "soon" && "Due soon: "}
-            {formatDate(bug.due)}
-          </span>
+        
+        <p className="text-sm text-gray-600 line-clamp-2 mb-4">
+          {bug.description}
+        </p>
+        
+        <div className="text-xs text-gray-500 mb-4 flex items-center">
+          <User className="h-3 w-3 mr-1" />
+          <span>Created by {bug.createdBy.name}</span>
         </div>
-
-        <div className="mt-3 flex justify-between items-center">
-          <Badge variant={bug.status === "COMPLETED" ? "outline" : "default"}>
-            {bug.status === "COMPLETED" ? "Completed" : "In Progress"}
-          </Badge>
-
-          <div className="flex-shrink-0">
-            <AvatarPlaceholder
-              name={bug.createdBy.name}
-              className="h-6 w-6 text-xs opacity-70 hover:opacity-100 transition-opacity"
-            />
+        
+        <div className="flex justify-between items-center">
+          <div className="text-xs text-gray-500 flex items-center">
+            <Calendar className="h-3 w-3 mr-1" />
+            <span>Due: {formatDate(bug.due)}</span>
           </div>
+          
+          {status === BugStatus.TO_DO && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="h-8 text-xs"
+                  disabled={isAssigning}
+                >
+                  Assign
+                  <ChevronDown className="h-3 w-3 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuGroup>
+                  {mockDevelopers.map(dev => (
+                    <DropdownMenuItem 
+                      key={dev.userID}
+                      onClick={() => handleAssignDeveloper(dev.userID)}
+                    >
+                      <div className="flex items-center">
+                        <AvatarPlaceholder 
+                          name={dev.name} 
+                          className="h-5 w-5 mr-2 text-xs" 
+                        />
+                        <span>{dev.name}</span>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          
+          {status === BugStatus.IN_PROGRESS && (
+            <div className="flex items-center space-x-2">
+              <AvatarPlaceholder 
+                name={bug.assignedTo?.name || ""} 
+                className="h-6 w-6 text-xs" 
+              />
+              <span className="text-xs">{bug.assignedTo?.name}</span>
+            </div>
+          )}
+          
+          {status === BugStatus.COMPLETED && (
+            <div className="flex items-center text-xs text-gray-500">
+              <Clock className="h-3 w-3 mr-1" />
+              <span>Completed: {formatDate(bug.resolvedDate)}</span>
+            </div>
+          )}
         </div>
+        
+        {status === BugStatus.COMPLETED && (
+          <div className="mt-3 pt-3 border-t border-gray-100 flex items-center text-xs text-green-600">
+            <Check className="h-3 w-3 mr-1" />
+            <span>Resolved by {bug.assignedTo?.name}</span>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

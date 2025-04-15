@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { Bug, BugPriority, BugStatus, Project, User } from "@/types";
 
@@ -66,6 +65,28 @@ const mockTester: User = {
   email: "jane@example.com",
   role: "tester"
 };
+
+// Mock developers for assignment
+const mockDevelopers: User[] = [
+  {
+    userID: 4,
+    name: "Mike Chen",
+    email: "mike@example.com",
+    role: "developer"
+  },
+  {
+    userID: 5,
+    name: "Sarah Wilson",
+    email: "sarah@example.com",
+    role: "developer"
+  },
+  {
+    userID: 6,
+    name: "David Johnson",
+    email: "david@example.com",
+    role: "developer"
+  }
+];
 
 // Mock bugs data
 const mockBugs: Bug[] = [
@@ -149,6 +170,11 @@ const api = {
   getProjectBugs: async (projectId: string, testerId: string) => {
     await simulateApiLatency();
     
+    // If testerId is "ALL", return all bugs for the project
+    if (testerId === "ALL") {
+      return mockBugs.filter(bug => bug.project.projectId.toString() === projectId);
+    }
+    
     // Filter bugs by project ID and tester ID
     return mockBugs.filter(
       (bug) => 
@@ -211,6 +237,32 @@ const api = {
     } else {
       bug.resolvedDate = null;
     }
+    
+    return bug;
+  },
+  
+  // Get all developers for assignment dropdown
+  getDevelopers: async () => {
+    await simulateApiLatency();
+    return mockDevelopers;
+  },
+  
+  // Assign a bug to a developer (used in project manager dashboard)
+  assignBugToDeveloper: async (bugId: string, developerId: string) => {
+    await simulateApiLatency();
+    
+    const bug = mockBugs.find(b => b.bugId.toString() === bugId);
+    if (!bug) {
+      throw new Error("Bug not found");
+    }
+    
+    const developer = mockDevelopers.find(d => d.userID.toString() === developerId);
+    if (!developer) {
+      throw new Error("Developer not found");
+    }
+    
+    bug.assignedTo = developer;
+    bug.status = BugStatus.IN_PROGRESS;
     
     return bug;
   }
