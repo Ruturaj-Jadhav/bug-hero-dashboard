@@ -87,9 +87,9 @@ export function FilterControls({
         
         <div className="flex flex-wrap gap-2">
           <Select
-            value={statusFilter.length === 1 ? statusFilter[0] : ""}
+            value={statusFilter.length === 1 ? statusFilter[0] : "all-statuses"}
             onValueChange={(value) => {
-              if (value === "") {
+              if (value === "all-statuses") {
                 onStatusFilterChange([]);
               } else {
                 onStatusFilterChange([value]);
@@ -100,7 +100,7 @@ export function FilterControls({
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="all-statuses">All Statuses</SelectItem>
               <SelectItem value={BugStatus.TO_DO}>To Do</SelectItem>
               <SelectItem value={BugStatus.IN_PROGRESS}>In Progress</SelectItem>
               <SelectItem value={BugStatus.COMPLETED}>Completed</SelectItem>
@@ -108,9 +108,9 @@ export function FilterControls({
           </Select>
 
           <Select
-            value={priorityFilter.length === 1 ? priorityFilter[0] : ""}
+            value={priorityFilter.length === 1 ? priorityFilter[0] : "all-priorities"}
             onValueChange={(value) => {
-              if (value === "") {
+              if (value === "all-priorities") {
                 onPriorityFilterChange([]);
               } else {
                 onPriorityFilterChange([value]);
@@ -121,7 +121,7 @@ export function FilterControls({
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Priorities</SelectItem>
+              <SelectItem value="all-priorities">All Priorities</SelectItem>
               <SelectItem value={BugPriority.LOW}>Low</SelectItem>
               <SelectItem value={BugPriority.MEDIUM}>Medium</SelectItem>
               <SelectItem value={BugPriority.HIGH}>High</SelectItem>
