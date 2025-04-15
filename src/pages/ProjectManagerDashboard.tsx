@@ -6,6 +6,9 @@ import { Navbar } from "@/components/Navbar";
 import { Toaster } from "@/components/ui/toaster";
 import { Project } from "@/types";
 import { useProjects } from "@/hooks/useProjects";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { CreateProjectModal } from "@/components/CreateProjectModal";
 
 // Dummy manager user for testing
 const dummyManager = {
@@ -17,7 +20,8 @@ const dummyManager = {
 
 export default function ProjectManagerDashboard() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const { projects, loading } = useProjects(dummyManager.userID.toString());
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { projects, loading, refetch } = useProjects(dummyManager.userID.toString());
 
   const handleSelectProject = (project: Project) => {
     setSelectedProject(project);
@@ -25,6 +29,14 @@ export default function ProjectManagerDashboard() {
 
   const handleBackToProjects = () => {
     setSelectedProject(null);
+  };
+
+  const handleCreateProject = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleProjectCreated = () => {
+    refetch();
   };
 
   return (
@@ -45,11 +57,20 @@ export default function ProjectManagerDashboard() {
             />
           ) : (
             <div className="space-y-6">
-              <header className="mt-6">
-                <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-                <p className="mt-2 text-gray-600">
-                  Select a project to view and manage bugs
-                </p>
+              <header className="mt-6 flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+                  <p className="mt-2 text-gray-600">
+                    Select a project to view and manage bugs
+                  </p>
+                </div>
+                <Button 
+                  onClick={handleCreateProject}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create Project
+                </Button>
               </header>
               <ProjectList 
                 projects={projects}
@@ -60,6 +81,13 @@ export default function ProjectManagerDashboard() {
           )}
         </div>
       </main>
+      
+      <CreateProjectModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onProjectCreated={handleProjectCreated}
+        managerId={dummyManager.userID.toString()}
+      />
       
       <Toaster />
     </div>

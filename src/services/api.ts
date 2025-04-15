@@ -66,6 +66,28 @@ const mockTester: User = {
   role: "tester"
 };
 
+// Mock testers for assignment
+const mockTesters: User[] = [
+  {
+    userID: 1,
+    name: "Jane Smith",
+    email: "jane@example.com",
+    role: "tester"
+  },
+  {
+    userID: 7,
+    name: "Emily Rodriguez",
+    email: "emily@example.com",
+    role: "tester"
+  },
+  {
+    userID: 8,
+    name: "Thomas Lee",
+    email: "thomas@example.com",
+    role: "tester"
+  }
+];
+
 // Mock developers for assignment
 const mockDevelopers: User[] = [
   {
@@ -265,6 +287,52 @@ const api = {
     bug.status = BugStatus.IN_PROGRESS;
     
     return bug;
+  },
+
+  // Get all testers for project assignment
+  getTesters: async () => {
+    await simulateApiLatency();
+    return mockTesters;
+  },
+
+  // Create a new project
+  createProject: async (projectData: {
+    name: string;
+    description: string;
+    testerId: string;
+    managerId: string;
+  }) => {
+    await simulateApiLatency();
+    
+    // Find the selected tester
+    const tester = mockTesters.find(t => t.userID.toString() === projectData.testerId);
+    if (!tester) {
+      throw new Error("Tester not found");
+    }
+    
+    // Find the manager (in a real app this would come from auth)
+    const manager = {
+      userID: 2,
+      name: "Alex Johnson",
+      email: "alex@example.com",
+      role: "manager"
+    };
+    
+    // Create new project
+    const newProject: Project = {
+      projectId: mockProjects.length + 1,
+      name: projectData.name,
+      description: projectData.description,
+      startDate: new Date().toISOString().split('T')[0],
+      projectManager: manager,
+      bugCount: 0,
+      createdDate: new Date().toISOString().split('T')[0]
+    };
+    
+    // Add to mock projects
+    mockProjects.push(newProject);
+    
+    return newProject;
   }
 };
 
