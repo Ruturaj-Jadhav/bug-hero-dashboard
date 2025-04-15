@@ -9,6 +9,9 @@ import NotFound from "./pages/NotFound";
 import DeveloperDashboard from "./pages/DeveloperDashboard";
 import TesterDashboard from "./pages/TesterDashboard";
 import ProjectManagerDashboard from "./pages/ProjectManagerDashboard";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -19,7 +22,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<TesterDashboard />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/dashboard" element={<DeveloperDashboard />} />
           <Route path="/tester" element={<TesterDashboard />} />
           <Route path="/manager" element={<ProjectManagerDashboard />} />
