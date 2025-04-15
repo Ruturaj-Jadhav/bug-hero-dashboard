@@ -1,301 +1,219 @@
 
-// // Dummy data for our bug tracking system
-// import { Project, Bug, User, BugStatus, BugPriority } from "@/types";
-
-// // Current user (the developer)
-// const currentUser: User = {
-//   id: "1",
-//   name: "John Doe",
-//   email: "john.doe@example.com",
-//   avatar: null,
-// };
-
-// // Mock projects data
-// const projects: Project[] = [
-//   {
-//     id: "1",
-//     name: "E-commerce Platform",
-//     description: "Online shopping platform with user accounts and payment processing",
-//     assignedDevelopers: ["1"],
-//   },
-//   {
-//     id: "2",
-//     name: "CRM System",
-//     description: "Customer relationship management system with analytics",
-//     assignedDevelopers: ["1"],
-//   },
-//   {
-//     id: "3",
-//     name: "Mobile Banking App",
-//     description: "Secure banking application for iOS and Android",
-//     assignedDevelopers: ["1"],
-//   },
-//   {
-//     id: "4",
-//     name: "Content Management System",
-//     description: "Enterprise CMS with workflow and publishing features",
-//     assignedDevelopers: ["1"],
-//   },
-// ];
-
-// // Mock bugs data
-// const bugs: Bug[] = [
-//   {
-//     id: "101",
-//     title: "Checkout process failing on payment submission",
-//     description: "Users report that the checkout process fails when they submit payment details. Error appears after clicking 'Pay Now' button.",
-//     projectId: "1",
-//     status: BugStatus.IN_PROGRESS,
-//     priority: BugPriority.HIGH,
-//     assignedTo: "1",
-//     createdBy: {
-//       id: "2",
-//       name: "Alice Smith",
-//       email: "alice@example.com",
-//       avatar: null,
-//     },
-//     assignedDate: "2023-03-15",
-//     dueDate: "2023-03-20",
-//   },
-//   {
-//     id: "102",
-//     title: "Product images not loading on mobile devices",
-//     description: "Product images fail to load when accessing the site from mobile browsers. Console shows 404 errors for image paths.",
-//     projectId: "1",
-//     status: BugStatus.IN_PROGRESS,
-//     priority: BugPriority.MEDIUM,
-//     assignedTo: "1",
-//     createdBy: {
-//       id: "3",
-//       name: "Bob Johnson",
-//       email: "bob@example.com",
-//       avatar: null,
-//     },
-//     assignedDate: "2023-03-14",
-//     dueDate: "2023-03-25",
-//   },
-//   {
-//     id: "201",
-//     title: "Customer search returns incorrect results",
-//     description: "When searching for customers by name, the results include unrelated entries. Filter logic seems to be ignoring exact match rules.",
-//     projectId: "2",
-//     status: BugStatus.IN_PROGRESS,
-//     priority: BugPriority.HIGH,
-//     assignedTo: "1",
-//     createdBy: {
-//       id: "4",
-//       name: "Carol Davis",
-//       email: "carol@example.com",
-//       avatar: null,
-//     },
-//     assignedDate: "2023-03-10",
-//     dueDate: "2023-03-18",
-//   },
-//   {
-//     id: "202",
-//     title: "Analytics dashboard shows wrong monthly totals",
-//     description: "The monthly sales totals on the analytics dashboard don't match the actual data. Calculations appear to be off by approximately 15%.",
-//     projectId: "2",
-//     status: BugStatus.COMPLETED,
-//     priority: BugPriority.MEDIUM,
-//     assignedTo: "1",
-//     createdBy: {
-//       id: "4",
-//       name: "Carol Davis",
-//       email: "carol@example.com",
-//       avatar: null,
-//     },
-//     assignedDate: "2023-03-05",
-//     dueDate: "2023-03-12",
-//   },
-//   {
-//     id: "301",
-//     title: "Transfer function times out for large amounts",
-//     description: "When users attempt to transfer amounts over $10,000, the transaction times out and fails. No error message is displayed to the user.",
-//     projectId: "3",
-//     status: BugStatus.IN_PROGRESS,
-//     priority: BugPriority.HIGH,
-//     assignedTo: "1",
-//     createdBy: {
-//       id: "5",
-//       name: "Dave Wilson",
-//       email: "dave@example.com",
-//       avatar: null,
-//     },
-//     assignedDate: "2023-03-14",
-//     dueDate: "2023-03-21",
-//   },
-//   {
-//     id: "302",
-//     title: "Biometric login fails on certain Android devices",
-//     description: "Users with Samsung Galaxy S21 devices report that the fingerprint login functionality fails consistently. The system falls back to PIN entry.",
-//     projectId: "3",
-//     status: BugStatus.IN_PROGRESS,
-//     priority: BugPriority.LOW,
-//     assignedTo: "1",
-//     createdBy: {
-//       id: "5",
-//       name: "Dave Wilson",
-//       email: "dave@example.com",
-//       avatar: null,
-//     },
-//     assignedDate: "2023-03-12",
-//     dueDate: "2023-03-22",
-//   },
-//   {
-//     id: "401",
-//     title: "Scheduled posts not publishing at set time",
-//     description: "Content scheduled for automatic publishing is not going live at the specified time. Posts remain in 'scheduled' status until manually published.",
-//     projectId: "4",
-//     status: BugStatus.IN_PROGRESS,
-//     priority: BugPriority.MEDIUM,
-//     assignedTo: "1",
-//     createdBy: {
-//       id: "6",
-//       name: "Eve Brown",
-//       email: "eve@example.com",
-//       avatar: null,
-//     },
-//     assignedDate: "2023-03-13",
-//     dueDate: "2023-03-19",
-//   },
-//   {
-//     id: "402",
-//     title: "PDF exports missing text formatting",
-//     description: "When exporting content as PDF, all text formatting (bold, italic, headers) is lost. The output contains only plain text with no styling.",
-//     projectId: "4",
-//     status: BugStatus.COMPLETED,
-//     priority: BugPriority.LOW,
-//     assignedTo: "1",
-//     createdBy: {
-//       id: "6",
-//       name: "Eve Brown",
-//       email: "eve@example.com",
-//       avatar: null,
-//     },
-//     assignedDate: "2023-03-08",
-//     dueDate: "2023-03-17",
-//   },
-// ];
-
-// // Simulated API service
-// const api = {
-//   // Get current user data
-//   getCurrentUser: (): Promise<User> => {
-//     return new Promise((resolve) => {
-//       setTimeout(() => {
-//         resolve(currentUser);
-//       }, 500);
-//     });
-//   },
-
-//   // Get projects assigned to developer
-//   getAssignedProjects: (developerId: string): Promise<Project[]> => {
-//     return new Promise((resolve) => {
-//       setTimeout(() => {
-//         const assignedProjects = projects.filter((project) =>
-//           project.assignedDevelopers.includes(developerId)
-//         );
-//         resolve(assignedProjects);
-//       }, 800);
-//     });
-//   },
-
-//   // Get bugs for a specific project assigned to developer
-//   getProjectBugs: (
-//     projectId: string,
-//     developerId: string
-//   ): Promise<Bug[]> => {
-//     return new Promise((resolve) => {
-//       setTimeout(() => {
-//         const filteredBugs = bugs.filter(
-//           (bug) => bug.projectId === projectId && bug.assignedTo === developerId
-//         );
-//         resolve(filteredBugs);
-//       }, 800);
-//     });
-//   },
-
-//   // Update bug status
-//   updateBugStatus: (
-//     bugId: string,
-//     status: BugStatus
-//   ): Promise<Bug> => {
-//     return new Promise((resolve, reject) => {
-//       setTimeout(() => {
-//         const bugIndex = bugs.findIndex((bug) => bug.id === bugId);
-        
-//         if (bugIndex !== -1) {
-//           bugs[bugIndex] = { ...bugs[bugIndex], status };
-//           resolve(bugs[bugIndex]);
-//         } else {
-//           reject(new Error("Bug not found"));
-//         }
-//       }, 600);
-//     });
-//   },
-// };
-
-// export default api;
-import { Project, Bug, User, BugStatus } from "@/types";
 import axios from "axios";
+import { Bug, BugPriority, BugStatus, Project, User } from "@/types";
 
-// Current user (the developer)
-const currentUser: User = {
-  userID: 52, // Static developer ID as per the requirement
-  name: "Charlie Brown",
-  email: "charlie@dev.com",
-  role: "DEVELOPER"
+// Simulate API latency
+const simulateApiLatency = () => new Promise(resolve => setTimeout(resolve, 500));
+
+// Mock data for projects
+const mockProjects: Project[] = [
+  {
+    projectId: 1,
+    name: "E-commerce Platform",
+    description: "Online shopping platform with user account management",
+    startDate: "2023-01-15",
+    projectManager: {
+      userID: 2,
+      name: "Alex Johnson",
+      email: "alex@example.com",
+      role: "manager"
+    },
+    bugCount: 12,
+    createdDate: "2023-01-15"
+  },
+  {
+    projectId: 2,
+    name: "Mobile Banking App",
+    description: "Secure banking application for smartphones",
+    startDate: "2023-03-10",
+    projectManager: {
+      userID: 3,
+      name: "Sarah Wilson",
+      email: "sarah@example.com",
+      role: "manager"
+    },
+    bugCount: 8,
+    createdDate: "2023-03-10"
+  },
+  {
+    projectId: 3,
+    name: "HR Management System",
+    description: "Employee management and payroll system",
+    startDate: "2023-05-20",
+    projectManager: {
+      userID: 2,
+      name: "Alex Johnson",
+      email: "alex@example.com",
+      role: "manager"
+    },
+    bugCount: 5,
+    createdDate: "2023-05-20"
+  }
+];
+
+// Mock developer user
+const mockDeveloper: User = {
+  userID: 4,
+  name: "Mike Chen",
+  email: "mike@example.com",
+  role: "developer"
 };
 
-// Simulated API service
+// Mock tester user
+const mockTester: User = {
+  userID: 1,
+  name: "Jane Smith",
+  email: "jane@example.com",
+  role: "tester"
+};
+
+// Mock bugs data
+const mockBugs: Bug[] = [
+  {
+    bugId: 1,
+    title: "Checkout process fails at payment step",
+    category: "Functionality",
+    description: "When users enter payment information and click 'Pay Now', the system shows an error and payment fails.",
+    priority: BugPriority.HIGH,
+    status: BugStatus.IN_PROGRESS,
+    resolvedDate: null,
+    due: "2023-07-25",
+    assignedTo: mockDeveloper,
+    createdBy: mockTester,
+    project: mockProjects[0],
+    screenshot: "/screenshot1.png"
+  },
+  {
+    bugId: 2,
+    title: "Product images not loading in search results",
+    category: "UI",
+    description: "Product images appear as broken links in search results page.",
+    priority: BugPriority.MEDIUM,
+    status: BugStatus.TO_DO,
+    resolvedDate: null,
+    due: "2023-07-30",
+    assignedTo: mockDeveloper,
+    createdBy: mockTester,
+    project: mockProjects[0]
+  },
+  {
+    bugId: 3,
+    title: "Login fails with valid credentials",
+    category: "Authentication",
+    description: "Users with valid credentials cannot log in. System shows generic error message.",
+    priority: BugPriority.HIGH,
+    status: BugStatus.COMPLETED,
+    resolvedDate: "2023-07-18",
+    due: "2023-07-20",
+    assignedTo: mockDeveloper,
+    createdBy: mockTester,
+    project: mockProjects[1]
+  },
+  {
+    bugId: 4,
+    title: "Transaction history shows incorrect dates",
+    category: "Data",
+    description: "The dates shown in transaction history are off by one day.",
+    priority: BugPriority.LOW,
+    status: BugStatus.TO_DO,
+    resolvedDate: null,
+    due: "2023-08-05",
+    assignedTo: mockDeveloper,
+    createdBy: mockTester,
+    project: mockProjects[1]
+  },
+  {
+    bugId: 5,
+    title: "Employee reports generate empty PDFs",
+    category: "Functionality",
+    description: "When generating employee reports as PDF, the file is created but contains no data.",
+    priority: BugPriority.MEDIUM,
+    status: BugStatus.IN_PROGRESS,
+    resolvedDate: null,
+    due: "2023-07-28",
+    assignedTo: mockDeveloper,
+    createdBy: mockTester,
+    project: mockProjects[2]
+  }
+];
+
 const api = {
-  // Get current user data
-  getCurrentUser: (): Promise<User> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(currentUser);
-      }, 500);
-    });
+  // Get projects assigned to a tester
+  getAssignedProjects: async (testerId: string) => {
+    await simulateApiLatency();
+    // In a real app, this would filter projects based on testerId
+    return mockProjects;
   },
-
-  // Get projects assigned to developer
-  getAssignedProjects: async (): Promise<Project[]> => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8089/developer/projects/${currentUser.userID}`
-      );
-      return response.data; // Assuming the backend returns the correct structure
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-      throw error;
+  
+  // Get bugs for a specific project created by a tester
+  getProjectBugs: async (projectId: string, testerId: string) => {
+    await simulateApiLatency();
+    
+    // Filter bugs by project ID and tester ID
+    return mockBugs.filter(
+      (bug) => 
+        bug.project.projectId.toString() === projectId && 
+        bug.createdBy.userID.toString() === testerId
+    );
+  },
+  
+  // Submit a new bug
+  submitBug: async (projectId: string, bugData: Partial<Bug>) => {
+    await simulateApiLatency();
+    
+    // In a real app, this would send a POST request to the server
+    console.log("Submitting bug:", { projectId, bugData });
+    
+    // Return mock data
+    const newBug: Bug = {
+      bugId: mockBugs.length + 1,
+      title: bugData.title || "New Bug",
+      category: bugData.category || "Functionality",
+      description: bugData.description || "",
+      priority: bugData.priority || BugPriority.MEDIUM,
+      status: BugStatus.TO_DO,
+      resolvedDate: null,
+      due: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days from now
+      assignedTo: mockDeveloper,
+      createdBy: mockTester,
+      project: mockProjects.find(p => p.projectId.toString() === projectId) || mockProjects[0],
+      screenshot: bugData.screenshot
+    };
+    
+    mockBugs.push(newBug);
+    return newBug;
+  },
+  
+  // Get bug details
+  getBugDetails: async (bugId: string) => {
+    await simulateApiLatency();
+    
+    const bug = mockBugs.find(b => b.bugId.toString() === bugId);
+    if (!bug) {
+      throw new Error("Bug not found");
     }
+    
+    return bug;
   },
-
-  // Get bugs for a specific project assigned to developer
-  getProjectBugs: async (projectId: number): Promise<Bug[]> => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8089/developer/${currentUser.userID}/projects/${projectId}/bugs`
-      );
-      return response.data; // Assuming the backend returns the correct structure
-    } catch (error) {
-      console.error("Error fetching bugs:", error);
-      throw error;
+  
+  // Update bug status (used in developer dashboard)
+  updateBugStatus: async (bugId: string, status: BugStatus) => {
+    await simulateApiLatency();
+    
+    const bug = mockBugs.find(b => b.bugId.toString() === bugId);
+    if (!bug) {
+      throw new Error("Bug not found");
     }
-  },
-
-  updateBugStatus: async (bugId: string, status: BugStatus): Promise<Bug> => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8089/developer/52/bugs/${bugId}/updateStatus`
-      );
-      return response.data; // Assuming the backend returns the updated bug
-    } catch (error) {
-      console.error("Error updating bug status:", error);
-      throw error;
+    
+    bug.status = status;
+    if (status === BugStatus.COMPLETED) {
+      bug.resolvedDate = new Date().toISOString().split('T')[0];
+    } else {
+      bug.resolvedDate = null;
     }
-  },
+    
+    return bug;
+  }
 };
 
 export default api;

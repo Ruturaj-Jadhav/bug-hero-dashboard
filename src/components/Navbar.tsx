@@ -1,62 +1,61 @@
 
 import { User } from "@/types";
-import { LogOut, UserCircle, Eye, EyeOff } from "lucide-react";
-import { AvatarPlaceholder } from "./ui/avatar-placeholder";
+import { AvatarPlaceholder } from "@/components/ui/avatar-placeholder";
 import { Button } from "@/components/ui/button";
+import { CreditCard, Eye, EyeOff, LogOut, Search, Settings, UserCircle } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-interface NavbarProps {
-  user: User | null;
-  loading: boolean;
+export interface NavbarProps {
+  user: User;
+  loading?: boolean;
   focusMode?: boolean;
   onToggleFocusMode?: () => void;
 }
 
-export function Navbar({ user, loading, focusMode = false, onToggleFocusMode }: NavbarProps) {
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 h-16 px-4 flex items-center justify-between">
-      <div className="flex items-center space-x-2">
-        <h1 className="text-xl font-bold text-primary">Developer Dashboard</h1>
-      </div>
+export function Navbar({ user, loading = false, focusMode = false, onToggleFocusMode }: NavbarProps) {
+  const navigate = useNavigate();
+  const [searchOpen, setSearchOpen] = useState(false);
 
-      <div className="flex items-center space-x-4">
-        {onToggleFocusMode && (
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={onToggleFocusMode}
-            title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
-          >
-            {focusMode ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-          </Button>
-        )}
-        
-        {loading ? (
-          <div className="h-10 w-40 bg-gray-200 animate-pulse rounded-md"></div>
-        ) : user ? (
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              {user.avatar ? (
-                <img 
-                  src={user.avatar} 
-                  alt={user.name} 
-                  className="h-8 w-8 rounded-full"
-                />
+  return (
+    <header className="fixed top-0 inset-x-0 h-16 z-50 w-full border-b bg-white/80 backdrop-blur-sm">
+      <div className="container flex h-full items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <div className="font-bold text-xl flex items-center gap-2 text-primary">
+            <span className="hidden md:inline">Bug Tracker</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {onToggleFocusMode && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden md:flex"
+              title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
+              onClick={onToggleFocusMode}
+            >
+              {focusMode ? (
+                <EyeOff className="h-5 w-5" />
               ) : (
-                <AvatarPlaceholder name={user.name} className="h-8 w-8" />
+                <Eye className="h-5 w-5" />
               )}
-              <span className="font-medium hidden md:inline">{user.name}</span>
-            </div>
-            <Button variant="ghost" size="icon">
-              <LogOut className="h-5 w-5" />
             </Button>
+          )}
+
+          <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)}>
+            <Search className="h-5 w-5" />
+          </Button>
+          
+          <Button variant="ghost" size="icon" onClick={() => navigate("/settings")}>
+            <Settings className="h-5 w-5" />
+          </Button>
+          
+          <div className="flex items-center">
+            <AvatarPlaceholder name={user.name} />
           </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <UserCircle className="h-8 w-8" />
-            <span>Guest User</span>
-          </div>
-        )}
+        </div>
       </div>
-    </nav>
+    </header>
   );
 }

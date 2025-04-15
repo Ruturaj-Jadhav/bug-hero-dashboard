@@ -1,5 +1,6 @@
 
 export enum BugStatus {
+  TO_DO = "TO_DO",
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
 }
@@ -11,33 +12,36 @@ export enum BugPriority {
 }
 
 export interface User {
-  userID: number; // Updated to match backend's "userID"
+  userID: number; 
   name: string;
   email: string;
-  password?: string; // Optional, as it might not always be needed
+  password?: string; 
   role: string;
 }
 
 export interface Project {
-  projectId: number; // Updated to match backend's "projectId"
+  projectId: number;
   name: string;
   description: string;
-  startDate: string; // Assuming backend sends this as a string
-  projectManager: User; // Nested object for the project manager
+  startDate: string;
+  projectManager: User;
+  bugCount?: number; // Added for tester dashboard
+  createdDate?: string; // Added for tester dashboard
 }
 
 export interface Bug {
-  bugId: number; // Updated to match backend's "bugId"
+  bugId: number;
   title: string;
-  category: string; // Added to match backend's "category"
+  category: string;
   description: string;
-  priority: string; // Updated to match backend's "priority" (e.g., "HIGH", "MEDIUM", "LOW")
-  status: string; // Updated to match backend's "status" (e.g., "IN_PROGRESS", "RESOLVED")
-  resolvedDate: string | null; // Nullable field
-  due: string; // Updated to match backend's "due"
-  assignedTo: User; // Nested object for the assigned developer
-  createdBy: User; // Nested object for the creator
-  project: Project; // Nested object for the project
+  priority: string;
+  status: string;
+  resolvedDate: string | null;
+  due: string;
+  assignedTo: User;
+  createdBy: User;
+  project: Project;
+  screenshot?: string; // Added for tester dashboard
 }
 
 // UI helper types
